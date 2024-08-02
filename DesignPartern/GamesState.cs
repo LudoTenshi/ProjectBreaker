@@ -36,6 +36,7 @@ namespace ProjectBreaker
                     currentScene = new SceneMenu(mainGame);
                     break;
                 case SceneType.Game:
+                    currentScene = new SceneGame(mainGame);
                     break;
                 case SceneType.GameOver:
                     break;

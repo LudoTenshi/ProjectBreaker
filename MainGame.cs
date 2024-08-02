@@ -7,7 +7,7 @@ namespace ProjectBreaker
     public class MainGame : Game
     {
         private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        public SpriteBatch spriteBatch;
         private RenderTarget2D _renderTarget;
 
         public GamesState _gameState;
@@ -50,7 +50,7 @@ namespace ProjectBreaker
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -60,11 +60,14 @@ namespace ProjectBreaker
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousState.IsKeyDown(Keys.Space))
+            {
+                _gameState.ChangeScene(GamesState.SceneType.Game);
+            }
             if (_gameState.currentScene != null) 
             {
                 _gameState.currentScene.Update(gameTime);
             }
-
             if (Keyboard.GetState().IsKeyDown(Keys.S) && !previousState.IsKeyDown(Keys.S))
             {
                 bSampling = !bSampling;
@@ -130,13 +133,13 @@ namespace ProjectBreaker
             Rectangle dst = new Rectangle(marginH, marginV, (int)(TargetWidth * ratio), (int)(TargetHeight * ratio));
 
             if (!bSampling)
-                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
             else
-                _spriteBatch.Begin();
+                spriteBatch.Begin();
 
-            _spriteBatch.Draw(_renderTarget, dst, Color.White);
+            spriteBatch.Draw(_renderTarget, dst, Color.White);
 
-            _spriteBatch.End();
+            spriteBatch.End();
         }
     }
 }
