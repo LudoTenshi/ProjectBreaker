@@ -13,6 +13,7 @@ namespace ProjectBreaker
             Menu,
             Game,
             GameOver,
+            Victory,
         }
 
         public static SceneManager currentScene {  get; set; }
@@ -20,6 +21,7 @@ namespace ProjectBreaker
 
         public static void ChangeScene(SceneType ptype) 
         {
+            GameObject.DestroyAll();
             if (currentScene != null) 
             {
                 currentScene.UnLoad();
@@ -35,6 +37,10 @@ namespace ProjectBreaker
                     currentScene = new SceneGame();
                     break;
                 case SceneType.GameOver:
+                    currentScene = new SceneGameOver();
+                    break;
+                case SceneType.Victory:
+                    currentScene = new SceneVictory();
                     break;
                 default:
                     break;

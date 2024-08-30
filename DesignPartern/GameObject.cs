@@ -20,7 +20,7 @@ namespace ProjectBreaker
         public Vector2 direction;
         public Rectangle bounds;
         public float _angle = 1;
-        protected int _speed = 5;
+        protected int _speed = 10;
         public bool enabled = true;
 
         public static Dictionary<string,List<GameObject>> _objects = new Dictionary<string,List<GameObject>>();
@@ -37,7 +37,11 @@ namespace ProjectBreaker
 
         public bool ColliderBox(GameObject g)
         {
-            return this.bounds.Intersects(g.bounds);
+            if (this.enabled) 
+            {
+                return this.bounds.Intersects(g.bounds);
+            }
+            return false;
         }
 
         public virtual void ColliderEffect(GameObject g) { }
@@ -68,6 +72,15 @@ namespace ProjectBreaker
             return null;
         }
 
+        public static void DeleteByName(string name)
+        {
+            if (_objects.ContainsKey(name))
+            {
+                _objects.Remove(name);
+            }
+        }
+
+        public static void DestroyAll() { _objects.Clear(); }
         public void OnDisable()
         {
             this.enabled = false;

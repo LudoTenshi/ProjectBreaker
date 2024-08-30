@@ -42,7 +42,7 @@ namespace ProjectBreaker
                 pp.MultiSampleCount,
                 RenderTargetUsage.DiscardContents);
 
-            GamesState.ChangeScene(GamesState.SceneType.Menu);
+            
 
             base.Initialize();
         }
@@ -56,12 +56,13 @@ namespace ProjectBreaker
 
             TextManager textManager = new TextManager();
             ServiceLocator.RegisterService<TextManager>(textManager);
+
+            GamesState.ChangeScene(GamesState.SceneType.Menu);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousState.IsKeyDown(Keys.Space) && GamesState.currentSceneType == GamesState.SceneType.Menu)
             {

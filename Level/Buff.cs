@@ -54,17 +54,22 @@ namespace ProjectBreaker
             this.bounds = new Rectangle((int)this.position.X, (int)this.position.Y, this.sizeW, this.sizeH);
             this._origin = new Vector2(this.sizeW * 0.5f, this.sizeH * 0.5f);
         }
+        public override void ColliderEffect(GameObject g)
+        {
+            this.enabled = false;
+
+        }
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
             if (this.active)
             {
-                this.position.Y += 2 ;
+                this.position.Y += 2;
             }
+            base.Update(gameTime);
         }
         public override void Draw()
         {
-            if (this.active) 
+            if (this.active && this.enabled) 
             {
                 ServiceLocator.GetService<SpriteBatch>().Draw(this.texture2D, this.bounds, null, Color.White,0,this._origin,SpriteEffects.None,0);
             }

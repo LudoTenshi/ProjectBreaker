@@ -9,20 +9,21 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace ProjectBreaker
 {
-    internal class SceneMenu : SceneManager
+    internal class SceneGameOver : SceneManager
     {
         private Texture2D _fond;
-        public SceneMenu() 
+        public SceneGameOver() 
         {
             Debug.WriteLine("New SceneMenu");
         }
 
         public override void Load()
         {
-            _fond = ServiceLocator.GetService<ContentManager>().Load<Texture2D>("Menu");
+            _fond = ServiceLocator.GetService<ContentManager>().Load<Texture2D>("GameOver");
             ServiceLocator.GetService<TextManager>().AddNewText("Press space",Color.White,new Vector2(MainGame.TargetWidth * 0.5f,MainGame.TargetHeight * 0.5f),false);
             base.Load();
         }
@@ -35,12 +36,13 @@ namespace ProjectBreaker
 
         public override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Space)) GamesState.ChangeScene(GamesState.SceneType.Menu);
             base.Update(gameTime);
         }
 
         public override void Draw()
         {
-            ServiceLocator.GetService<SpriteBatch>().Draw(_fond, new Vector2(0, 0), Color.White * 0.5f);
+            ServiceLocator.GetService<SpriteBatch>().Draw(_fond, new Vector2(0, 0), Color.White);
             base.Draw();
         }
     }

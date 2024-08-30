@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SharpDX.Direct3D11;
 
 
 namespace ProjectBreaker
@@ -41,23 +42,68 @@ namespace ProjectBreaker
 
         public override void Update(GameTime gameTime)
         {
+            GameObject Bar = GameObject.FindByName("Bar")[0];
             foreach (GameObject ball in _lvlGenerate.listBall)
             {
-                GameObject Bar = GameObject.FindByName("Bar")[0];
-                if (ball.ColliderBox(Bar))
-                {
-                    ball.ColliderEffect(Bar);
-                }
+                if (ball.ColliderBox(Bar)) ball.ColliderEffect(Bar);
+
                 foreach (GameObject brique in _lvlGenerate.listBrique)
                 {
                     if (brique.enabled) 
                     {
-                        if (ball.ColliderBox(brique))
-                        {
-                            ball.ColliderEffect(brique);
-                        }
+                        if (ball.ColliderBox(brique)) ball.ColliderEffect(brique);
                     }
                 }
+            }
+            List<GameObject> ListBuff = GameObject.FindByName("Buff");
+            foreach (GameObject args in ListBuff) 
+            {
+                Buff buff = (Buff)args;
+                if (buff.ColliderBox(Bar))
+                {
+                    buff.ColliderEffect(Bar);
+                    switch (buff.typeB)
+                    {
+                        case Buff.type.Ball:
+                            _lvlGenerate.GenerateBall();
+                            ServiceLocator.GetService<TextManager>().AddNewText("MultiBall", Color.White, new Vector2(Bar.bounds.Center.X, Bar.bounds.Top), true);
+                            break;
+                        case Buff.type.Star:
+                            _lvlGenerate.listBall.ToList().ForEach(b => b.starPower = true);
+                            ServiceLocator.GetService<TextManager>().AddNewText("StarPower", Color.White, new Vector2(Bar.bounds.Center.X, Bar.bounds.Top), true);
+                            break;
+                        case Buff.type.Power:
+                            _lvlGenerate.listBall.ToList().ForEach(b => b.damage += 10);
+                            ServiceLocator.GetService<TextManager>().AddNewText("Power Up", Color.White, new Vector2(Bar.bounds.Center.X, Bar.bounds.Top), true);
+                            break;
+                        case Buff.type.Lucky:
+                            ServiceLocator.GetService<TextManager>().AddNewText("Lucky Lucky", Color.White, new Vector2(Bar.bounds.Center.X, Bar.bounds.Top), true);
+                            _lvlGenerate.level++;
+                            _lvlGenerate.GenerateBrique();
+                            _lvlGenerate.GenerateBall();
+                            break;
+                    }
+                }
+            }
+            _lvlGenerate.listBrique.RemoveAll(b => b.enabled == false);
+            _lvlGenerate.listBall.RemoveAll(b => b.enabled == false);
+            if (_lvlGenerate.listBall.Count == 0)
+            {
+                GamesState.ChangeScene(GamesState.SceneType.GameOver);
+            }
+            if (_lvlGenerate.listBrique.Count == 0)
+            {
+                _lvlGenerate.level++;
+                if (_lvlGenerate.level >= 2)
+                {
+                    GamesState.ChangeScene(GamesState.SceneType.Victory);
+                }
+                else
+                {
+                    _lvlGenerate.GenerateBrique();
+                    _lvlGenerate.GenerateBall();
+                }
+                
             }
             base.Update(gameTime);
         }

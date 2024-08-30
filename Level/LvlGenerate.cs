@@ -29,6 +29,10 @@ namespace ProjectBreaker
         public void GenerateBrique() 
         {
             this.listBrique.Clear();
+            GameObject.DeleteByName("Brique");
+            this.listBall.Clear();
+            GameObject.DeleteByName("Ball");
+            ServiceLocator.GetService<TextManager>().Texts.Clear(); 
             string workingDirectory = Environment.CurrentDirectory;
             string path = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
 

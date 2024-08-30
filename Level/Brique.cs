@@ -66,10 +66,6 @@ namespace ProjectBreaker
         public override void Draw()
         {
             ServiceLocator.GetService<SpriteBatch>().Draw(this.texture2D, this.bounds, this._typeBri[type], Color.White * (float)(this._hp / (this._hpMax * (type + 1f))));
-            if (this._hp != this._hpMax * (type + 1))
-            {
-                Debug.WriteLine(this._hp / (this._hpMax * (type + 1f)));
-            }
             //Brique.DrawRectangle(ServiceLocator.GetService<SpriteBatch>(), this.bounds, Color.White, 1);
         }
        
