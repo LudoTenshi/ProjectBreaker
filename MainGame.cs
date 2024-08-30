@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -7,13 +8,12 @@ namespace ProjectBreaker
     public class MainGame : Game
     {
         private GraphicsDeviceManager _graphics;
-        public SpriteBatch spriteBatch;
+        private SpriteBatch _spriteBatch;
         private RenderTarget2D _renderTarget;
 
-        public GamesState _gameState;
 
-        public int TargetWidth;
-        public int TargetHeight;
+        public static int TargetWidth;
+        public static int TargetHeight;
         public bool bSampling = false;
         public KeyboardState previousState;
 
@@ -23,13 +23,12 @@ namespace ProjectBreaker
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            TargetWidth = 1280;
-            TargetHeight = 720;
+            TargetWidth = 980;
+            TargetHeight = 1280;
 
             _graphics.PreferredBackBufferWidth = TargetWidth;
             _graphics.PreferredBackBufferHeight = TargetHeight;
 
-            _gameState = new GamesState(this);
         }
 
         protected override void Initialize()
@@ -43,16 +42,20 @@ namespace ProjectBreaker
                 pp.MultiSampleCount,
                 RenderTargetUsage.DiscardContents);
 
-            _gameState.ChangeScene(GamesState.SceneType.Menu);
+            GamesState.ChangeScene(GamesState.SceneType.Menu);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            ServiceLocator.RegisterService<ContentManager>(Content);
+            ServiceLocator.RegisterService<SpriteBatch>(_spriteBatch);
+
+            TextManager textManager = new TextManager();
+            ServiceLocator.RegisterService<TextManager>(textManager);
         }
 
         protected override void Update(GameTime gameTime)
@@ -60,13 +63,13 @@ namespace ProjectBreaker
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousState.IsKeyDown(Keys.Space))
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !previousState.IsKeyDown(Keys.Space) && GamesState.currentSceneType == GamesState.SceneType.Menu)
             {
-                _gameState.ChangeScene(GamesState.SceneType.Game);
+                GamesState.ChangeScene(GamesState.SceneType.Game);
             }
-            if (_gameState.currentScene != null) 
+            if (GamesState.currentScene != null) 
             {
-                _gameState.currentScene.Update(gameTime);
+                GamesState.currentScene.Update(gameTime);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.S) && !previousState.IsKeyDown(Keys.S))
             {
@@ -95,15 +98,17 @@ namespace ProjectBreaker
 
         protected override void Draw(GameTime gameTime)
         {
+
+            GraphicsDevice.SetRenderTarget(_renderTarget);
             GraphicsDevice.Clear(Color.Black);
+            ServiceLocator.GetService<SpriteBatch>().Begin();
 
-            if (_gameState.currentScene != null)
+            if (GamesState.currentScene != null)
             {
-                _gameState.currentScene.Draw(gameTime);
+                GamesState.currentScene.Draw();
             }
-
+            ServiceLocator.GetService<SpriteBatch>().End();
             GraphicsDevice.SetRenderTarget(null);
-
             RenderDraw();
 
             base.Draw(gameTime);
@@ -133,13 +138,13 @@ namespace ProjectBreaker
             Rectangle dst = new Rectangle(marginH, marginV, (int)(TargetWidth * ratio), (int)(TargetHeight * ratio));
 
             if (!bSampling)
-                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
             else
-                spriteBatch.Begin();
+                _spriteBatch.Begin();
 
-            spriteBatch.Draw(_renderTarget, dst, Color.White);
+            _spriteBatch.Draw(_renderTarget, dst, Color.White);
 
-            spriteBatch.End();
+            _spriteBatch.End();
         }
     }
 }

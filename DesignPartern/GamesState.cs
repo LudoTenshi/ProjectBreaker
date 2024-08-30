@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBreaker
 {
-    public class GamesState
+    public static class GamesState
     {
         public enum SceneType
         {
@@ -15,28 +15,24 @@ namespace ProjectBreaker
             GameOver,
         }
 
-        protected MainGame mainGame;
-        public SceneManager currentScene {  get; set; }
-        public GamesState(MainGame pGame)
-        {
-            this.mainGame = pGame; 
-        }
+        public static SceneManager currentScene {  get; set; }
+        public static SceneType currentSceneType { get; set; }
 
-        public void ChangeScene(SceneType ptype) 
+        public static void ChangeScene(SceneType ptype) 
         {
             if (currentScene != null) 
             {
                 currentScene.UnLoad();
                 currentScene = null;
             }
-
+            currentSceneType = ptype;
             switch (ptype)
             {
                 case SceneType.Menu:
-                    currentScene = new SceneMenu(mainGame);
+                    currentScene = new SceneMenu();
                     break;
                 case SceneType.Game:
-                    currentScene = new SceneGame(mainGame);
+                    currentScene = new SceneGame();
                     break;
                 case SceneType.GameOver:
                     break;

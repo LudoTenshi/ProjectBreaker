@@ -11,7 +11,7 @@ namespace ProjectBreaker
 {
     internal class SceneMenu : SceneManager
     {
-        public SceneMenu(MainGame pGame) : base(pGame) 
+        public SceneMenu() 
         {
             Debug.WriteLine("New SceneMenu");
         }
@@ -33,9 +33,9 @@ namespace ProjectBreaker
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
-            base.Draw(gameTime);
+            base.Draw();
         }
     }
 }

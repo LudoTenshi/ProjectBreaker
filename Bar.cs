@@ -6,37 +6,50 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace ProjectBreaker
 {
-    internal class Bar
+    internal class Bar : GameObject
     {
-        private Texture2D _texture2D;
-        private Vector2 _vector2;
-
-        public Bar() {}
-
-        public void Init(Texture2D ptexture2D, Vector2 pvector2)
+        public Bar(Vector2 pvector2) : base("Bar")
         {
-            _texture2D = ptexture2D;
-            _vector2 = pvector2;
+            this.texture2D = ServiceLocator.GetService<ContentManager>().Load<Texture2D>("Barre"); ;
+            this.position = pvector2;
+            this.sizeH = this.texture2D.Height;
+            this.sizeW = this.texture2D.Width;
+            this.position.X -= this.texture2D.Width * 0.5f;
+            this.position.Y -= this.texture2D.Height;
+            this.bounds = new Rectangle((int)this.position.X, (int)this.position.Y, this.texture2D.Width, this.texture2D.Height);
+            
         }
-        public void Update(GameTime pgameTime) 
+
+        public override void Update(GameTime pgameTime) 
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
-                _vector2.X -= 15;
+                position.X -= 15;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                _vector2.X += 15;
+                position.X += 15;
             }
+
+            Vector2 collider = this.ColliderScreen();
+            
+            if(collider.X == 1)
+            {
+                position.X = 0;
+            }
+            if(collider.X == -1)
+            {
+                position.X = MainGame.TargetWidth - texture2D.Width;
+            }
+            base.Update(pgameTime);
         }
-        public void Draw(GameTime pgameTime,SpriteBatch pspriteBatch)
+        public override void Draw()
         {
-            pspriteBatch.Begin();
-            pspriteBatch.Draw(this._texture2D,this._vector2,Color.White);
-            pspriteBatch.End();
+            ServiceLocator.GetService<SpriteBatch>().Draw(this.texture2D,this.position,Color.White);
         }
 
     }

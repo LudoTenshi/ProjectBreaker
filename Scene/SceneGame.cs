@@ -6,6 +6,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,17 +16,20 @@ namespace ProjectBreaker
     internal class SceneGame : SceneManager
     {
         private Bar _bar;
-        public SceneGame(MainGame pGame) : base(pGame)
+        private LvlGenerate _lvlGenerate;
+        public SceneGame()
         {
             Debug.WriteLine("New SceneGame");
-            _bar = new Bar();
+            _bar = new Bar(new Vector2(MainGame.TargetWidth * 0.5f, MainGame.TargetHeight));
         }
 
         public override void Load()
         {
             Debug.WriteLine("Load SceneGame");
-            Texture2D newText = this.mainGame.Content.Load<Texture2D>("Barre");
-            _bar.Init(newText, new Vector2(mainGame.TargetWidth * 0.5f,mainGame.TargetHeight - newText.Height));
+
+            _lvlGenerate = new LvlGenerate();
+            _lvlGenerate.GenerateBrique();
+            _lvlGenerate.GenerateBall();
             base.Load();
         }
 
@@ -37,14 +41,31 @@ namespace ProjectBreaker
 
         public override void Update(GameTime gameTime)
         {
-            _bar.Update(gameTime);
+            foreach (GameObject ball in _lvlGenerate.listBall)
+            {
+                GameObject Bar = GameObject.FindByName("Bar")[0];
+                if (ball.ColliderBox(Bar))
+                {
+                    ball.ColliderEffect(Bar);
+                }
+                foreach (GameObject brique in _lvlGenerate.listBrique)
+                {
+                    if (brique.enabled) 
+                    {
+                        if (ball.ColliderBox(brique))
+                        {
+                            ball.ColliderEffect(brique);
+                        }
+                    }
+                }
+            }
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
-            _bar.Draw(gameTime,mainGame.spriteBatch);
-            base.Draw(gameTime);
+            _lvlGenerate.Draw();
+            base.Draw();
         }
     }
 }
